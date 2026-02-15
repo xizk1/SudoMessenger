@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SudoMessenger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .chat-container {
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: #4a90e2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            position: relative;
+        }
+        
+        .online-count {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .login-screen {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 100%;
+            justify-content: center;
+        }
+        
+        .login-screen input {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .login-screen input:focus {
+            border-color: #4a90e2;
+        }
+        
+        .login-screen button {
+            padding: 15px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .login-screen button:hover {
+            background: #357abd;
+        }
+        
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            position: relative;
+            word-wrap: break-word;
+        }
+        
+        .message.own {
+            background: #4a90e2;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.other {
+            background: #f0f0f0;
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message.system {
+            background: #fff3cd;
+            color: #856404;
+            align-self: center;
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .message-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+        
+        .message.own .message-info {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .typing-indicator {
+            padding: 10px 20px;
+            color: #999;
+            font-style: italic;
+            font-size: 14px;
+            min-height: 40px;
+        }
+        
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            background: white;
+        }
+        
+        .input-area input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .input-area input:focus {
+            border-color: #4a90e2;
+        }
+        
+        .input-area button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: #4a90e2;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .input-area button:hover {
+            background: #357abd;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Экран входа -->
+        <div id="loginScreen" class="login-screen">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #333;">Добро пожаловать!</h2>
+            <input type="text" id="usernameInput" placeholder="Введите ваше имя" maxlength="30">
+            <button onclick="joinChat()">Войти в чат</button>
+        </div>
+        
+        <!-- Основной чат (скрыт сначала) -->
+        <div id="chatMain" class="chat-main hidden">
+            <div class="chat-header">
+                SudoMessenger
+                <div class="online-count" id="onlineCount">0 онлайн</div>
+            </div>
+            
+            <div id="messages" class="messages"></div>
+            
+            <div id="typingIndicator" class="typing-indicator"></div>
+            
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Введите сообщение..." onkeyup="checkTyping(event)" onkeydown="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключаем Socket.IO -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        // Конфигурация
+        const SERVER_URL = 'https://sudomessenger.onrender.com';
+        let socket;
+        let currentUser = '';
+        let typingTimer;
+        let isTyping = false;
+        
+        // Функция входа в чат
+        function joinChat() {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (!username) {
+                alert('Введите имя!');
+                return;
+            }
+            
+            currentUser = username;
+            
+            // Скрываем экран входа, показываем чат
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('chatMain').classList.remove('hidden');
+            
+            // Подключаемся к серверу
+            socket = io(SERVER_URL);
+            
+            // Отправляем имя на сервер
+            socket.emit('set username', username);
+            
+            // Получение истории сообщений
+            socket.on('chat history', (history) => {
+                history.forEach(msg => addMessage(msg));
+            });
+            
+            // Получение нового сообщения
+            socket.on('chat message', (msg) => {
+                addMessage(msg);
+            });
+            
+            // Системное сообщение (вошел/вышел)
+            socket.on('system message', (msg) => {
+                addSystemMessage(msg);
+            });
+            
+            // Обновление количества онлайн
+            socket.on('users online', (count) => {
+                document.getElementById('onlineCount').textContent = count + ' онлайн';
+            });
+            
+            // Кто-то печатает
+            socket.on('typing', (username) => {
+                document.getElementById('typingIndicator').textContent = `${username} печатает...`;
+            });
+            
+            socket.on('stop typing', () => {
+                document.getElementById('typingIndicator').textContent = '';
+            });
+        }
+        
+        // Функция отправки сообщения
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            
+            if (text && socket) {
+                socket.emit('chat message', {
+                    text: text,
+                    user: currentUser
+                });
+                input.value = '';
+                stopTyping();
+            }
+        }
+        
+        // Функция добавления сообщения в чат
+        function addMessage(msg) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            
+            const isOwn = msg.user === currentUser;
+            messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
+            
+            messageDiv.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 5px;">${msg.user}</div>
+                <div>${msg.text}</div>
+                <div class="message-info">
+                    <span>${msg.time || new Date().toLocaleTimeString()}</span>
+                </div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        // Функция добавления системного сообщения
+        function addSystemMessage(text) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message system';
+            messageDiv.innerHTML = `<div style="text-align: center;">${text}</div>`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        // Проверка печатания
+        function checkTyping(event) {
+            if (!socket) return;
+            
+            const input = document.getElementById('messageInput');
+            
+            if (input.value.length > 0 && !isTyping) {
+                isTyping = true;
+                socket.emit('typing', currentUser);
+            }
+            
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                stopTyping();
+            }, 1000);
+        }
+        
+        function stopTyping() {
+            if (isTyping && socket) {
+                isTyping = false;
+                socket.emit('stop typing');
+            }
+        }
+    </script>
+</body>
+</html>
