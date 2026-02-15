@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SudoMessenger</title>
+    <title>SudoMessenger - Каналы и контакты</title>
     <style>
         * {
             margin: 0;
@@ -21,75 +21,123 @@
         }
         
         .chat-container {
-            width: 400px;
-            height: 600px;
+            width: 1000px;
+            height: 700px;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             display: flex;
-            flex-direction: column;
             overflow: hidden;
-        }
-        
-        .chat-header {
-            background: #4a90e2;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 20px;
             position: relative;
         }
         
-        .online-count {
-            font-size: 14px;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-        
-        .login-screen {
-            padding: 20px;
+        /* ===== ЛЕВАЯ ПАНЕЛЬ (КАНАЛЫ) ===== */
+        .channels-panel {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            height: 100%;
+        }
+        
+        .channels-header {
+            padding: 20px;
+            background: #243342;
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .add-channel-btn {
+            background: #3498db;
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
             justify-content: center;
         }
         
-        .login-screen input {
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s;
+        .channels-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
         }
         
-        .login-screen input:focus {
-            border-color: #4a90e2;
-        }
-        
-        .login-screen button {
-            padding: 15px;
-            background: #4a90e2;
-            color: white;
-            border: none;
+        .channel-item {
+            padding: 12px 15px;
+            margin: 5px 0;
             border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
             cursor: pointer;
             transition: background 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .login-screen button:hover {
-            background: #357abd;
+        .channel-item:hover {
+            background: #34495e;
         }
         
+        .channel-item.active {
+            background: #3498db;
+        }
+        
+        .channel-name {
+            font-weight: 500;
+        }
+        
+        .channel-users {
+            font-size: 12px;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        /* ===== ЦЕНТРАЛЬНАЯ ПАНЕЛЬ (ЧАТ) ===== */
         .chat-main {
             flex: 1;
             display: flex;
             flex-direction: column;
-            height: 100%;
+            background: #f5f5f5;
+        }
+        
+        .chat-header {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .channel-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .channel-title {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .channel-description {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .online-count {
+            background: #27ae60;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
         }
         
         .messages {
@@ -102,25 +150,26 @@
         }
         
         .message {
-            max-width: 80%;
-            padding: 10px 15px;
+            max-width: 70%;
+            padding: 12px 15px;
             border-radius: 15px;
             position: relative;
             word-wrap: break-word;
+            display: flex;
+            gap: 10px;
         }
         
         .message.own {
-            background: #4a90e2;
+            background: #3498db;
             color: white;
             align-self: flex-end;
-            border-bottom-right-radius: 5px;
+            flex-direction: row-reverse;
         }
         
         .message.other {
-            background: #f0f0f0;
+            background: white;
             color: black;
             align-self: flex-start;
-            border-bottom-left-radius: 5px;
         }
         
         .message.system {
@@ -128,20 +177,49 @@
             color: #856404;
             align-self: center;
             font-size: 12px;
-            padding: 5px 10px;
+            padding: 5px 15px;
             border-radius: 20px;
+            max-width: 90%;
         }
         
-        .message-info {
+        .message.private {
+            background: #e8f4fd;
+            border-left: 3px solid #3498db;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            font-size: 20px;
             display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            margin-top: 5px;
-            opacity: 0.7;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
         
-        .message.own .message-info {
-            color: rgba(255,255,255,0.8);
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-user {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .message-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
         }
         
         .typing-indicator {
@@ -154,15 +232,15 @@
         
         .input-area {
             padding: 20px;
+            background: white;
             border-top: 1px solid #e0e0e0;
             display: flex;
             gap: 10px;
-            background: white;
         }
         
         .input-area input {
             flex: 1;
-            padding: 12px;
+            padding: 12px 20px;
             border: 2px solid #e0e0e0;
             border-radius: 25px;
             outline: none;
@@ -170,7 +248,7 @@
         }
         
         .input-area input:focus {
-            border-color: #4a90e2;
+            border-color: #3498db;
         }
         
         .input-area button {
@@ -178,18 +256,258 @@
             height: 50px;
             border-radius: 50%;
             border: none;
-            background: #4a90e2;
+            background: #3498db;
             color: white;
             font-size: 20px;
             cursor: pointer;
-            transition: background 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .input-area button:hover {
-            background: #357abd;
+        /* ===== ПРАВАЯ ПАНЕЛЬ (ПОЛЬЗОВАТЕЛИ) ===== */
+        .users-panel {
+            width: 250px;
+            background: white;
+            border-left: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .users-header {
+            padding: 20px;
+            background: #f8f9fa;
+            font-weight: bold;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-avatar-large {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 10px auto;
+        }
+        
+        .users-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .user-item {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .user-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .user-avatar-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .user-status {
+            font-size: 11px;
+            color: #27ae60;
+        }
+        
+        .contacts-list {
+            border-top: 1px solid #e0e0e0;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .contacts-header {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .contact-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .remove-contact {
+            margin-left: auto;
+            color: #e74c3c;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        /* ===== МОДАЛЬНЫЕ ОКНА ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 400px;
+            max-width: 90%;
+        }
+        
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .modal-content input,
+        .modal-content textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            outline: none;
+        }
+        
+        .modal-content button {
+            padding: 12px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .modal-content button.cancel {
+            background: #95a5a6;
+        }
+        
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .avatar-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .avatar-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .avatar-option.selected {
+            border: 3px solid #27ae60;
+        }
+        
+        .login-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+        
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 350px;
+            text-align: center;
+        }
+        
+        .login-box h2 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        .login-box button {
+            width: 100%;
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
         }
         
         .hidden {
@@ -199,42 +517,133 @@
 </head>
 <body>
     <div class="chat-container">
-        <!-- Экран входа -->
+        <!-- ЭКРАН ВХОДА -->
         <div id="loginScreen" class="login-screen">
-            <h2 style="text-align: center; margin-bottom: 20px; color: #333;">Добро пожаловать!</h2>
-            <input type="text" id="usernameInput" placeholder="Введите ваше имя" maxlength="30">
-            <button onclick="joinChat()">Войти в чат</button>
+            <div class="login-box">
+                <h2>🚀 Вход в SudoMessenger</h2>
+                <input type="text" id="usernameInput" placeholder="Введите ваш ник" maxlength="30">
+                <div class="avatar-grid" style="grid-template-columns: repeat(6, 1fr);">
+                    <div class="avatar-option" onclick="selectAvatar('😊')">😊</div>
+                    <div class="avatar-option" onclick="selectAvatar('😎')">😎</div>
+                    <div class="avatar-option" onclick="selectAvatar('🤓')">🤓</div>
+                    <div class="avatar-option" onclick="selectAvatar('👻')">👻</div>
+                    <div class="avatar-option" onclick="selectAvatar('🤖')">🤖</div>
+                    <div class="avatar-option" onclick="selectAvatar('👽')">👽</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐶')">🐶</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐱')">🐱</div>
+                    <div class="avatar-option" onclick="selectAvatar('🦊')">🦊</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐼')">🐼</div>
+                    <div class="avatar-option" onclick="selectAvatar('🦁')">🦁</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐧')">🐧</div>
+                </div>
+                <button onclick="joinChat()">Войти в чат</button>
+            </div>
         </div>
         
-        <!-- Основной чат (скрыт сначала) -->
-        <div id="chatMain" class="chat-main hidden">
+        <!-- ЛЕВАЯ ПАНЕЛЬ (КАНАЛЫ) -->
+        <div class="channels-panel">
+            <div class="channels-header">
+                <span>📢 Каналы</span>
+                <button class="add-channel-btn" onclick="showCreateChannelModal()">+</button>
+            </div>
+            <div class="channels-list" id="channelsList">
+                <!-- Каналы будут загружаться сюда -->
+            </div>
+        </div>
+        
+        <!-- ЦЕНТРАЛЬНАЯ ПАНЕЛЬ (ЧАТ) -->
+        <div class="chat-main">
             <div class="chat-header">
-                SudoMessenger
+                <div class="channel-info">
+                    <span class="channel-title" id="currentChannelTitle">Общий</span>
+                    <span class="channel-description" id="currentChannelDesc">Основной канал для всех</span>
+                </div>
                 <div class="online-count" id="onlineCount">0 онлайн</div>
             </div>
             
-            <div id="messages" class="messages"></div>
+            <div class="messages" id="messages"></div>
             
-            <div id="typingIndicator" class="typing-indicator"></div>
+            <div class="typing-indicator" id="typingIndicator"></div>
             
             <div class="input-area">
                 <input type="text" id="messageInput" placeholder="Введите сообщение..." onkeyup="checkTyping(event)" onkeydown="if(event.key==='Enter') sendMessage()">
                 <button onclick="sendMessage()">➤</button>
             </div>
         </div>
+        
+        <!-- ПРАВАЯ ПАНЕЛЬ (ПОЛЬЗОВАТЕЛИ) -->
+        <div class="users-panel">
+            <div class="users-header">
+                <span>👤 Профиль</span>
+                <span id="myAvatar" class="user-avatar-large" onclick="showAvatarModal()">😊</span>
+            </div>
+            
+            <div class="users-list" id="usersList">
+                <!-- Пользователи онлайн -->
+            </div>
+            
+            <div class="contacts-list" id="contactsList">
+                <div class="contacts-header">📇 Контакты</div>
+                <!-- Контакты будут здесь -->
+            </div>
+        </div>
     </div>
-
-    <!-- Подключаем Socket.IO -->
+    
+    <!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ КАНАЛА -->
+    <div id="createChannelModal" class="modal">
+        <div class="modal-content">
+            <h3>Создать новый канал</h3>
+            <input type="text" id="channelName" placeholder="Название канала">
+            <textarea id="channelDesc" placeholder="Описание канала" rows="3"></textarea>
+            <button onclick="createChannel()">Создать</button>
+            <button class="cancel" onclick="hideCreateChannelModal()">Отмена</button>
+        </div>
+    </div>
+    
+    <!-- МОДАЛЬНОЕ ОКНО ВЫБОРА АВАТАРА -->
+    <div id="avatarModal" class="modal">
+        <div class="modal-content">
+            <h3>Выбери аватар</h3>
+            <div class="avatar-grid">
+                <div class="avatar-option" onclick="changeAvatar('😊')">😊</div>
+                <div class="avatar-option" onclick="changeAvatar('😎')">😎</div>
+                <div class="avatar-option" onclick="changeAvatar('🤓')">🤓</div>
+                <div class="avatar-option" onclick="changeAvatar('👻')">👻</div>
+                <div class="avatar-option" onclick="changeAvatar('🤖')">🤖</div>
+                <div class="avatar-option" onclick="changeAvatar('👽')">👽</div>
+                <div class="avatar-option" onclick="changeAvatar('🐶')">🐶</div>
+                <div class="avatar-option" onclick="changeAvatar('🐱')">🐱</div>
+                <div class="avatar-option" onclick="changeAvatar('🦊')">🦊</div>
+                <div class="avatar-option" onclick="changeAvatar('🐼')">🐼</div>
+                <div class="avatar-option" onclick="changeAvatar('🦁')">🦁</div>
+                <div class="avatar-option" onclick="changeAvatar('🐧')">🐧</div>
+            </div>
+            <button class="cancel" onclick="hideAvatarModal()">Закрыть</button>
+        </div>
+    </div>
+    
+    <!-- ПОДКЛЮЧЕНИЕ SOCKET.IO -->
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
-        // Конфигурация
+        // ============= КОНФИГУРАЦИЯ =============
         const SERVER_URL = 'https://sudomessenger.onrender.com';
         let socket;
         let currentUser = '';
+        let currentAvatar = '😊';
+        let currentChannel = 'general';
         let typingTimer;
         let isTyping = false;
+        let selectedAvatar = '😊';
         
-        // Функция входа в чат
+        // ============= ФУНКЦИИ ВХОДА =============
+        function selectAvatar(avatar) {
+            selectedAvatar = avatar;
+            document.querySelectorAll('.avatar-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+        
         function joinChat() {
             const username = document.getElementById('usernameInput').value.trim();
             if (!username) {
@@ -243,30 +652,37 @@
             }
             
             currentUser = username;
+            currentAvatar = selectedAvatar;
             
-            // Скрываем экран входа, показываем чат
+            // Скрываем экран входа
             document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('chatMain').classList.remove('hidden');
             
             // Подключаемся к серверу
             socket = io(SERVER_URL);
             
-            // Отправляем имя на сервер
+            // Отправляем имя и аватар
             socket.emit('set username', username);
+            socket.emit('change avatar', currentAvatar);
             
-            // Получение истории сообщений
-            socket.on('chat history', (history) => {
+            // Обновляем аватар в профиле
+            document.getElementById('myAvatar').textContent = currentAvatar;
+            
+            // ============= СЛУШАТЕЛИ СОБЫТИЙ =============
+            
+            // История сообщений
+            socket.on('channel history', (history) => {
+                document.getElementById('messages').innerHTML = '';
                 history.forEach(msg => addMessage(msg));
             });
             
-            // Получение нового сообщения
+            // Новое сообщение
             socket.on('chat message', (msg) => {
                 addMessage(msg);
             });
             
-            // Системное сообщение (вошел/вышел)
+            // Системное сообщение
             socket.on('system message', (msg) => {
-                addSystemMessage(msg);
+                addSystemMessage(msg.text || msg);
             });
             
             // Обновление количества онлайн
@@ -274,32 +690,146 @@
                 document.getElementById('onlineCount').textContent = count + ' онлайн';
             });
             
-            // Кто-то печатает
-            socket.on('typing', (username) => {
-                document.getElementById('typingIndicator').textContent = `${username} печатает...`;
+            // Список каналов
+            socket.on('channels list', (channels) => {
+                updateChannelsList(channels);
             });
             
-            socket.on('stop typing', () => {
-                document.getElementById('typingIndicator').textContent = '';
+            // Создан новый канал
+            socket.on('channel created', (channel) => {
+                addChannelToList(channel);
+            });
+            
+            // Список пользователей
+            socket.on('users list', (users) => {
+                updateUsersList(users);
+            });
+            
+            // Пользователи в текущем канале
+            socket.on('channel users', (users) => {
+                updateChannelUsers(users);
+            });
+            
+            // Текущий канал
+            socket.on('current channel', (channel) => {
+                document.getElementById('currentChannelTitle').textContent = channel.name;
+            });
+            
+            // Кто-то печатает
+            socket.on('user typing', (data) => {
+                if (data.channel === currentChannel) {
+                    document.getElementById('typingIndicator').textContent = `${data.username} печатает...`;
+                }
+            });
+            
+            socket.on('user stop typing', (data) => {
+                if (data.channel === currentChannel) {
+                    document.getElementById('typingIndicator').textContent = '';
+                }
+            });
+            
+            // Приватное сообщение
+            socket.on('private message', (msg) => {
+                addPrivateMessage(msg);
+            });
+            
+            // Список контактов
+            socket.on('contacts list', (contacts) => {
+                updateContactsList(contacts);
+            });
+            
+            // Аватар изменен
+            socket.on('avatar changed', (avatar) => {
+                currentAvatar = avatar;
+                document.getElementById('myAvatar').textContent = avatar;
             });
         }
         
-        // Функция отправки сообщения
+        // ============= ФУНКЦИИ КАНАЛОВ =============
+        function showCreateChannelModal() {
+            document.getElementById('createChannelModal').classList.add('active');
+        }
+        
+        function hideCreateChannelModal() {
+            document.getElementById('createChannelModal').classList.remove('active');
+        }
+        
+        function createChannel() {
+            const name = document.getElementById('channelName').value.trim();
+            const description = document.getElementById('channelDesc').value.trim();
+            
+            if (name) {
+                socket.emit('create channel', { name, description });
+                hideCreateChannelModal();
+                document.getElementById('channelName').value = '';
+                document.getElementById('channelDesc').value = '';
+            }
+        }
+        
+        function switchChannel(channelKey, channelName) {
+            currentChannel = channelKey;
+            socket.emit('switch channel', channelKey);
+            
+            // Подсветка активного канала
+            document.querySelectorAll('.channel-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+        
+        function updateChannelsList(channels) {
+            const list = document.getElementById('channelsList');
+            list.innerHTML = '';
+            
+            channels.forEach(channel => {
+                const channelElement = document.createElement('div');
+                channelElement.className = `channel-item ${channel.key === currentChannel ? 'active' : ''}`;
+                channelElement.onclick = () => switchChannel(channel.key, channel.name);
+                channelElement.innerHTML = `
+                    <span class="channel-name"># ${channel.name}</span>
+                    <span class="channel-users">${channel.users ? channel.users.length : 0}</span>
+                `;
+                list.appendChild(channelElement);
+            });
+        }
+        
+        function addChannelToList(channel) {
+            const list = document.getElementById('channelsList');
+            const channelElement = document.createElement('div');
+            channelElement.className = 'channel-item';
+            channelElement.onclick = () => switchChannel(channel.key, channel.name);
+            channelElement.innerHTML = `
+                <span class="channel-name"># ${channel.name}</span>
+                <span class="channel-users">0</span>
+            `;
+            list.appendChild(channelElement);
+        }
+        
+        // ============= ФУНКЦИИ СООБЩЕНИЙ =============
         function sendMessage() {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
             
             if (text && socket) {
-                socket.emit('chat message', {
-                    text: text,
-                    user: currentUser
-                });
+                // Проверяем, не приватное ли это сообщение
+                if (text.startsWith('/msg ')) {
+                    const parts = text.split(' ');
+                    const to = parts[1];
+                    const msgText = parts.slice(2).join(' ');
+                    
+                    socket.emit('private message', {
+                        to: to,
+                        text: msgText
+                    });
+                } else {
+                    socket.emit('chat message', { text: text });
+                }
+                
                 input.value = '';
                 stopTyping();
             }
         }
         
-        // Функция добавления сообщения в чат
         function addMessage(msg) {
             const messagesDiv = document.getElementById('messages');
             const messageDiv = document.createElement('div');
@@ -308,10 +838,11 @@
             messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
             
             messageDiv.innerHTML = `
-                <div style="font-weight: bold; margin-bottom: 5px;">${msg.user}</div>
-                <div>${msg.text}</div>
-                <div class="message-info">
-                    <span>${msg.time || new Date().toLocaleTimeString()}</span>
+                <div class="avatar">${msg.avatar || '😊'}</div>
+                <div class="message-content">
+                    <div class="message-user">${msg.user}</div>
+                    <div class="message-text">${msg.text}</div>
+                    <div class="message-time">${msg.time}</div>
                 </div>
             `;
             
@@ -319,17 +850,119 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
         
-        // Функция добавления системного сообщения
-        function addSystemMessage(text) {
+        function addPrivateMessage(msg) {
             const messagesDiv = document.getElementById('messages');
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message system';
-            messageDiv.innerHTML = `<div style="text-align: center;">${text}</div>`;
+            
+            messageDiv.className = 'message private';
+            messageDiv.innerHTML = `
+                <div class="avatar">${msg.avatar || '😊'}</div>
+                <div class="message-content">
+                    <div class="message-user">📨 ${msg.from} → ${msg.to}</div>
+                    <div class="message-text">${msg.text}</div>
+                    <div class="message-time">${msg.time}</div>
+                </div>
+            `;
+            
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
         
-        // Проверка печатания
+        function addSystemMessage(text) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message system';
+            messageDiv.innerHTML = `<div>${text}</div>`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        // ============= ФУНКЦИИ ПОЛЬЗОВАТЕЛЕЙ =============
+        function updateUsersList(users) {
+            const list = document.getElementById('usersList');
+            list.innerHTML = '<div class="contacts-header">👥 Онлайн</div>';
+            
+            users.forEach(user => {
+                if (user.username !== currentUser) {
+                    const userElement = document.createElement('div');
+                    userElement.className = 'user-item';
+                    userElement.onclick = () => showUserMenu(user.username);
+                    userElement.innerHTML = `
+                        <div class="user-avatar-small">${user.avatar || '😊'}</div>
+                        <div class="user-info">
+                            <div class="user-name">${user.username}</div>
+                            <div class="user-status">● онлайн</div>
+                        </div>
+                    `;
+                    list.appendChild(userElement);
+                }
+            });
+        }
+        
+        function updateChannelUsers(users) {
+            // Можно обновить количество в канале
+        }
+        
+        function showUserMenu(username) {
+            if (confirm(`Добавить ${username} в контакты?`)) {
+                socket.emit('add contact', username);
+            }
+        }
+        
+        // ============= ФУНКЦИИ КОНТАКТОВ =============
+        function updateContactsList(contacts) {
+            const list = document.getElementById('contactsList');
+            list.innerHTML = '<div class="contacts-header">📇 Контакты</div>';
+            
+            if (contacts && contacts.length > 0) {
+                contacts.forEach(contact => {
+                    const contactElement = document.createElement('div');
+                    contactElement.className = 'contact-item';
+                    contactElement.innerHTML = `
+                        <div class="user-avatar-small">😊</div>
+                        <span>${contact}</span>
+                        <span class="remove-contact" onclick="removeContact('${contact}')">✕</span>
+                    `;
+                    contactElement.onclick = (e) => {
+                        if (!e.target.classList.contains('remove-contact')) {
+                            startPrivateChat(contact);
+                        }
+                    };
+                    list.appendChild(contactElement);
+                });
+            } else {
+                list.innerHTML += '<div style="padding: 10px; color: #999; font-size: 12px;">Нет контактов</div>';
+            }
+        }
+        
+        function removeContact(contact) {
+            if (confirm(`Удалить ${contact} из контактов?`)) {
+                socket.emit('remove contact', contact);
+            }
+        }
+        
+        function startPrivateChat(contact) {
+            document.getElementById('messageInput').value = `/msg ${contact} `;
+            document.getElementById('messageInput').focus();
+        }
+        
+        // ============= ФУНКЦИИ АВАТАРА =============
+        function showAvatarModal() {
+            document.getElementById('avatarModal').classList.add('active');
+        }
+        
+        function hideAvatarModal() {
+            document.getElementById('avatarModal').classList.remove('active');
+        }
+        
+        function changeAvatar(avatar) {
+            currentAvatar = avatar;
+            socket.emit('change avatar', avatar);
+            document.getElementById('myAvatar').textContent = avatar;
+            hideAvatarModal();
+        }
+        
+        // ============= ФУНКЦИИ ПЕЧАТАНИЯ =============
         function checkTyping(event) {
             if (!socket) return;
             
@@ -337,7 +970,10 @@
             
             if (input.value.length > 0 && !isTyping) {
                 isTyping = true;
-                socket.emit('typing', currentUser);
+                socket.emit('typing', {
+                    channel: currentChannel,
+                    username: currentUser
+                });
             }
             
             clearTimeout(typingTimer);
@@ -349,7 +985,9 @@
         function stopTyping() {
             if (isTyping && socket) {
                 isTyping = false;
-                socket.emit('stop typing');
+                socket.emit('stop typing', {
+                    channel: currentChannel
+                });
             }
         }
     </script>
