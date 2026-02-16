@@ -18,6 +18,11 @@ const io = new Server(server, {
   }
 });
 
+// ============= ГЛАВНАЯ СТРАНИЦА =============
+app.get('/', (req, res) => {
+    res.send('работает!');
+});
+
 // ============= БАЗА ДАННЫХ (В ФАЙЛАХ) =============
 const DATA_DIR = './data';
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
